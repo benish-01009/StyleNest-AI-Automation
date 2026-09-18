@@ -1,0 +1,970 @@
+{
+  "name": "StyleNest — AI-Powered E-Commerce Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "StyleNest Order Form",
+        "formDescription": "Place your order by providing the details below.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Customer Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Customer Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Product",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Black Hoodie   "
+                  },
+                  {
+                    "option": "White T-Shirt"
+                  },
+                  {
+                    "option": "Blue Jeans"
+                  },
+                  {
+                    "option": "Casual Jacket"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Quantity",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1040,
+        -96
+      ],
+      "id": "69445ba5-0ac4-451e-9553-69860a8e4e3e",
+      "name": "On form submission",
+      "webhookId": "db5798b8-f379-439a-9767-0debe96b1c8c"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "62633f53-28d4-4620-af79-7bba0c25ad37",
+              "leftValue": "={{$json.Stock}}",
+              "rightValue": "={{ $('On form submission').first().json.Quantity }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        -64
+      ],
+      "id": "63e70999-004a-4c5b-acb6-44a9c9d308c6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg",
+          "mode": "list",
+          "cachedResultName": "StyleNest Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Product",
+              "lookupValue": "={{ $('On form submission').first().json.Product }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        64,
+        -368
+      ],
+      "id": "3de83053-3f76-4a22-95e7-c9297afe3827",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RguKnPUDJqrByDs4",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg",
+          "mode": "list",
+          "cachedResultName": "StyleNest Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Stock": "={{ Number($json.Stock) - Number($('On form submission').first().json.Quantity) }}",
+            "Product ID": "={{ $json[\"Product ID\"] }}"
+          },
+          "matchingColumns": [
+            "Product ID"
+          ],
+          "schema": [
+            {
+              "id": "Product ID",
+              "displayName": "Product ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stock",
+              "displayName": "Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        -176
+      ],
+      "id": "597e59b1-fb11-4eb0-aaf9-9f8945b74e1b",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RguKnPUDJqrByDs4",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg",
+          "mode": "list",
+          "cachedResultName": "StyleNest Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 941567406,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit#gid=941567406"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Customer Name": "={{ $('On form submission').first().json['Customer Name'] }}",
+            "Customer Email": "={{ $('On form submission').first().json['Customer Email'] }}",
+            "Product": "={{ $('On form submission').first().json.Product }}",
+            "Quantity": "={{ $('On form submission').first().json.Quantity }}",
+            "Total": "={{ Number($('Get row(s) in sheet').first().json.Price) * Number($('On form submission').first().json.Quantity) }}",
+            "Status": "Confirmed",
+            "Order Date": "={{$now}}",
+            "Order ID": "={{ 'ORD-' + Date.now() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Order ID",
+              "displayName": "Order ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Email",
+              "displayName": "Customer Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product",
+              "displayName": "Product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total",
+              "displayName": "Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order Date",
+              "displayName": "Order Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        992,
+        -176
+      ],
+      "id": "37bcb9d4-ed96-4db9-ac33-e8d154dd0941",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RguKnPUDJqrByDs4",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').first().json['Customer Email'] }}",
+        "subject": "StyleNest Order Confirmed 🎉",
+        "emailType": "text",
+        "message": "=Hi {{ $('On form submission').first().json['Customer Name'] }},\n\nYour StyleNest order has been successfully confirmed!\n\nProduct: {{ $('On form submission').first().json.Product }}\nQuantity: {{ $('On form submission').first().json.Quantity }}\n\nTotal Amount: Rs. {{ $('Append row in sheet').first().json.Total }}\n\nThank you for shopping with StyleNest!\n\nBest regards,\nStyleNest Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1776,
+        -160
+      ],
+      "id": "7eb372e1-6d61-4012-b683-1f2b6da596e6",
+      "name": "Send a message",
+      "webhookId": "c1cdf244-6e14-4d4e-815c-4c671335e5c5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MwCHZMEXjH8mVle9",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').first().json['Customer Email'] }}",
+        "subject": "StyleNest Order — Insufficient Stock",
+        "emailType": "text",
+        "message": "=Hi {{ $('On form submission').first().json['Customer Name'] }},\n\nWe're sorry, but we don't have enough stock for your requested order.\n\nProduct: {{ $('On form submission').first().json['Product'] }}\nRequested Quantity: {{ $('On form submission').first().json['Quantity'] }}\nAvailable Stock: {{ $json[\"Stock\"] }}\n\nPlease reduce the quantity or try another product.\n\nThank you for understanding.\n\nBest regards,\nStyleNest Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        112
+      ],
+      "id": "31aa857c-c2fc-4cdb-8ca5-c4c6b3a6c314",
+      "name": "Send a message1",
+      "webhookId": "662cda7e-120d-4b31-998d-3ac487475e8b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MwCHZMEXjH8mVle9",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Place Order",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6ed3b8b8-3577-47c4-836d-8be4ba73cc91"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Place Order"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "637abb1c-6456-4830-ac7d-be13bdcbecf8",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Complaint",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Complaint"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b16e7588-a65e-4e63-b237-f3210d8d22a9",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "Product Question",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Product Question"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -512,
+        -112
+      ],
+      "id": "ed0ac89b-742b-411d-84a4-7ea85d1f0d0d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the customer support assistant for StyleNest, an online clothing store.\n\nThe customer has submitted a complaint.\n\nRead the customer's message and write a short, clear and friendly email response.\n\nRules:\n- Speak directly to the customer.\n- Use simple English.\n- Clearly acknowledge their complaint.\n- Apologize if appropriate.\n- Give a helpful next step.\n- Do not invent order details, delivery dates, refunds, compensation, or policies.\n- Do not say that you checked something unless the workflow actually provided that information.\n- Do not explain your reasoning.\n- Do not mention AI.\n- Return ONLY the email response, with no headings such as \"AI Response\", \"Analysis\", or \"Answer\".\n\nCustomer name:\n{{ $('On form submission').item.json['Customer Name'] }}\n\nCustomer complaint:\n{{ $('On form submission').item.json.Message }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -128,
+        -96
+      ],
+      "id": "a25360fe-41f7-49cd-b0ae-546cd62bcb9f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -128,
+        64
+      ],
+      "id": "3e3f88f5-725e-49f3-9f74-ec75e7dd7a21",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0clhphbJRKd5W8bv",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Customer Email'] }}",
+        "subject": "StyleNest Customer Support",
+        "emailType": "text",
+        "message": "={{$json.output}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        -96
+      ],
+      "id": "63bd08ec-abaf-4667-9b05-9d50cf16f010",
+      "name": "Send a message2",
+      "webhookId": "f29846a8-d439-4072-b9e9-b2c915192b28",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MwCHZMEXjH8mVle9",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg",
+          "mode": "list",
+          "cachedResultName": "StyleNest Database",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BgKsi8hCvQwKll_YTAE0HaGGNk114ak70YuDPYq-mjg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Product",
+              "lookupValue": "={{ $('On form submission').first().json.Product.trim() }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "d657911a-5fdb-4da2-92f4-77cee80a24c1",
+      "name": "Get row(s) in sheet1",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "RguKnPUDJqrByDs4",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').first().json['Customer Email'] }}",
+        "subject": "StyleNest Product Information",
+        "emailType": "text",
+        "message": "={{$json.output}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        224
+      ],
+      "id": "0c3e4ed9-74ad-4040-84b7-b28bf6a239b8",
+      "name": "Send a message3",
+      "webhookId": "e2b5179f-76e9-41df-908f-e38d31af4537",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MwCHZMEXjH8mVle9",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the request classifier for StyleNest, an online clothing store.\n\nDetermine what the customer wants based on the information they submitted.\n\nThere are only three possible categories:\n\n1. Place Order\n2. Product Question\n3. Complaint\n\nRules:\n\n- If the customer wants to buy/order a product, classify as Place Order.\n- If the customer is asking about a product, price, availability, stock, etc., classify as Product Question.\n- If the customer is reporting a problem, delay, damaged product, wrong product, refund issue, etc., classify as Complaint.\n- If Product and Quantity are provided and the customer has not written a message, classify as Place Order.\n- Return ONLY one of these exact values:\nPlace Order\nProduct Question\nComplaint\n\nDo not explain your answer.\n\nCustomer message:\n{{$json[\"Message\"]}}\n\nProduct:\n{{$json[\"Product\"]}}\n\nQuantity:\n{{$json[\"Quantity\"]}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -832,
+        -96
+      ],
+      "id": "001ad3b2-5ca1-480c-b6c9-588ccc05f5fd",
+      "name": "AI Agent2"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -832,
+        128
+      ],
+      "id": "9e03b18d-70dd-4b15-b752-d786c90feef9",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0clhphbJRKd5W8bv",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the customer support assistant for StyleNest.\n\nAnswer the customer's product question using ONLY the product information provided below.\n\nBe clear, friendly and concise.\nDo not invent information that is not provided.\n\nCustomer question:\n{{ $('On form submission').item.json.Message }}\nProduct information:\nProduct: {{$json[\"Product\"]}}\nPrice: {{$json[\"Price\"]}}\nStock: {{$json[\"Stock\"]}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -16,
+        224
+      ],
+      "id": "98a9a0a0-e190-4b10-a767-b746a829d4a4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        432
+      ],
+      "id": "e549c04c-6590-478f-bbfb-fe7ad81b4d6a",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0clhphbJRKd5W8bv",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cb280294-ab2f-46d3-9a82-094f8b06083a",
+              "leftValue": "={{ Number($('Get row(s) in sheet').first().json.Stock) - Number($('On form submission').first().json.Quantity) }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        -176
+      ],
+      "id": "85bd0f1c-cda3-4eb9-90a6-9dfab0fcdd17",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').first().json['Customer Email'] }}",
+        "subject": "StyleNest Alert: Product Out of Stock",
+        "message": "=Hello,  A product has reached zero stock after a successful order.  Product: {{ $('On form submission').first().json.Product }} Quantity ordered: {{ $('On form submission').first().json.Quantity }}  Please restock this product.  StyleNest Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1616,
+        -368
+      ],
+      "id": "31753f55-bed0-4585-a387-46d9dcfcc0f9",
+      "name": "Send a message4",
+      "webhookId": "400c9798-9724-4169-bde2-7bec7cc71c40",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MwCHZMEXjH8mVle9",
+          "name": "Gmail account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Customer Name": "beenish",
+          "Customer Email": "benishiqbal00@gmail.com",
+          "Product": "Black Hoodie   ",
+          "Quantity": 1,
+          "Message": "have you black hoodie",
+          "submittedAt": "2026-09-18T00:12:44.740-04:00",
+          "formMode": "test"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send a message4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9333f638-be6c-453e-95da-d0f8bb705570",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f07a0abc8d3f68e5c877e64f190a8b38c627f0f5aa739070efd462f051ec73bb"
+  },
+  "nodeGroups": [],
+  "id": "7DlXr5ZvSovrXiXH",
+  "tags": []
+}
